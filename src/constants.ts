@@ -1,0 +1,5 @@
+export enum KEYWORD_TYPES {
+    ASSETS = "ASSETS",
+    EXCHANGES = "EXCHANGES",
+    PAYMENTS = "PAYMENTS"
+}
