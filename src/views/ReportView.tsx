@@ -47,6 +47,11 @@ const filterRowStyle: CSSProperties = {
     marginBottom: '8px'
 }
 
+const buttonStyle: CSSProperties = {
+    width: '100px',
+    height: '40px'
+}
+
 
 class ReportView extends React.Component<Props, States> {
 
@@ -170,7 +175,7 @@ class ReportView extends React.Component<Props, States> {
                     {this.renderPaymentsOptions()}
                 </select>
             </div>
-            <button onClick={this.clickCheckFilter}>Check</button>
+            <button style={buttonStyle} onClick={this.clickCheckFilter}>Check</button>
         </div>
     }
 

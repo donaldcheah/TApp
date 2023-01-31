@@ -19,20 +19,17 @@ const appStyle: CSSProperties = {
   backgroundPosition: 'center bottom -50px',
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center'
+  alignItems: 'center',
+  overflow: 'scroll'
 }
 
 const contentStyle: CSSProperties = {
-  // border: "1px solid",
-  // borderRadius: "8px",
+  marginTop: '16px',
   height: '100%',
-  minWidth: '480px',
-  maxWidth: '640px',
   width: '100%',
   maxHeight: '832px',
-  // heig: '100%',
-  overflow: 'scroll',
-  padding: '10px'
+  // padding: '10px'
+  padding: '0px 10px'
 }
 
 interface AppProps { }

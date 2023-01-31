@@ -16,10 +16,10 @@ const style: CSSProperties = {
 }
 const btnStyle: CSSProperties = {
     flex: 1,
-    maxWidth: '100px',
-    // minWidth: '120px',
+    // maxWidth: '100px',
     marginRight: '5px',
-    padding: '5px'
+    padding: '5px',
+    height: '40px'
 }
 class AppNavigationView extends React.Component<Props, State> {
 
