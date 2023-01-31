@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 interface Props {
     transactions: any[]
 }
@@ -15,6 +15,12 @@ transaction object
     payment
 }
 */
+const viewStyle: CSSProperties = {
+    padding: '8px',
+    border: '1px solid',
+    borderRadius: '8px',
+    marginBottom: '8px'
+}
 class ReportCurrency extends React.Component<Props> {
     renderReport() {
         let myrAmount = 0;
@@ -36,8 +42,8 @@ class ReportCurrency extends React.Component<Props> {
         </div>
     }
     render(): React.ReactNode {
-        return <div>
-            <p>report currency</p>
+        return <div id="reportCurrency" style={viewStyle}>
+            <h5>Currency</h5>
             {this.renderReport()}
         </div>
     }

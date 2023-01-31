@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { dbAccess } from '../DBAccess';
 import { KEYWORD_TYPES } from '../constants';
 
@@ -9,6 +9,16 @@ interface States {
     payments: string[],
     isLoaded: boolean
     selectedDate: string
+}
+
+const viewStyle: CSSProperties = {
+    border: '1px solid',
+    borderRadius: '8px',
+    marginTop: '8px',
+    padding: '8px'
+}
+const entryRowStyle: CSSProperties = {
+    marginBottom: '8px',
 }
 
 class AddTransactionView extends React.Component<Props, States>{
@@ -122,7 +132,7 @@ class AddTransactionView extends React.Component<Props, States>{
         const options = this.state.assets.map(s => {
             return <option key={s} id={s}>{s}</option>
         })
-        return <div>
+        return <div id='transactions.from' style={entryRowStyle}>
             <label>From : </label>
             <select onChange={this.onSelectFromChange}>
                 {options}
@@ -135,7 +145,7 @@ class AddTransactionView extends React.Component<Props, States>{
         const options = this.state.assets.map(s => {
             return <option key={s} id={s}>{s}</option>
         })
-        return <div>
+        return <div id='transactions.to' style={entryRowStyle}>
             <label>To : </label>
             <select onChange={this.onSelectToChange}>
                 {options}
@@ -148,7 +158,7 @@ class AddTransactionView extends React.Component<Props, States>{
         const options = this.state.exchanges.map(s => {
             return <option key={s} id={s}>{s}</option>
         })
-        return <div>
+        return <div id='transactions.exchange' style={entryRowStyle}>
             <label>Exchange : </label>
             <select onChange={this.onSelectExchangeChange}>
                 {options}
@@ -160,7 +170,7 @@ class AddTransactionView extends React.Component<Props, States>{
         const options = this.state.payments.map(s => {
             return <option key={s} id={s}>{s}</option>
         })
-        return <div>
+        return <div id='transactions.payment' style={entryRowStyle}>
             <label>Payment : </label>
             <select onChange={this.onSelectPaymentChange}>
                 {options}
@@ -168,8 +178,7 @@ class AddTransactionView extends React.Component<Props, States>{
         </div>
     }
     renderDateView() {
-
-        return <div>
+        return <div id="transactions.date" style={entryRowStyle}>
             <label>Date : </label>
             <input type="datetime-local"
                 value={this.state.selectedDate}
@@ -218,16 +227,15 @@ class AddTransactionView extends React.Component<Props, States>{
         if (!this.state.isLoaded)
             return <div>Loading keywords...</div>
 
-        return <div>
-            <p>in add transaction view</p>
-            <div>
-                {this.renderDateView()}
-                {this.renderFromView()}
-                {this.renderToView()}
-                {this.renderExchangeView()}
-                {this.renderPaymentView()}
-                <button onClick={this.onClickAddTransaction}>Add Transaction</button>
-            </div>
+        return <div id="transactions" style={viewStyle}>
+
+            {this.renderDateView()}
+            {this.renderFromView()}
+            {this.renderToView()}
+            {this.renderExchangeView()}
+            {this.renderPaymentView()}
+            <button onClick={this.onClickAddTransaction}>Add Transaction</button>
+
         </div>
     }
 }

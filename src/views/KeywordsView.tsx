@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 
 import AddKeywordView from './labels/AddKeywordView';
 
@@ -16,6 +16,16 @@ interface States {
     assetsList: string[],
     exchangesList: string[],
     paymentsList: string[]
+}
+
+const viewStyle: CSSProperties = {
+    border: '1px solid',
+    borderRadius: '8px',
+    marginTop: '8px',
+    padding: '8px'
+}
+const entryRowStyle: CSSProperties = {
+    marginBottom: '8px',
 }
 
 class KeywordsView extends React.Component<Props, States> {
@@ -153,15 +163,16 @@ class KeywordsView extends React.Component<Props, States> {
 
     render(): React.ReactNode {
         // console.log('render state:', this.state)
-        return <div>
+        return <div id="keywords" style={viewStyle}>
             {/* <p>in keywords view</p> */}
-
-            <label>Keyword Type:</label>
-            <select onChange={this.onKeywordTypeChange}>
-                <option id={KEYWORD_TYPES.ASSETS} >Assets</option>
-                <option id={KEYWORD_TYPES.EXCHANGES}>Exchanges</option>
-                <option id={KEYWORD_TYPES.PAYMENTS}>Payments</option>
-            </select>
+            <div id="keywords.type" style={entryRowStyle}>
+                <label>Keyword Type : </label>
+                <select onChange={this.onKeywordTypeChange}>
+                    <option id={KEYWORD_TYPES.ASSETS} >Assets</option>
+                    <option id={KEYWORD_TYPES.EXCHANGES}>Exchanges</option>
+                    <option id={KEYWORD_TYPES.PAYMENTS}>Payments</option>
+                </select>
+            </div>
             <AddKeywordView selectedType={this.state.selectedType} addedKeywordCallback={this.onAddedKeyword} />
             {this.renderListByType(this.state.selectedType)}
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import ReportNumTransactions from './reports/ReportNumTransactions';
 import ReportAssetsSold from './reports/ReportAssetsSold';
 import ReportCurrency from './reports/ReportCurrency';
@@ -32,6 +32,21 @@ const MONTHS = {
     "November": 11,
     "December": 12
 }
+
+const viewStyle: CSSProperties = {
+    border: '1px solid',
+    borderRadius: '8px',
+    padding: '8px',
+    marginTop: '8px'
+}
+
+const filtersStyle: CSSProperties = {
+    marginBottom: '8px'
+}
+const filterRowStyle: CSSProperties = {
+    marginBottom: '8px'
+}
+
 
 class ReportView extends React.Component<Props, States> {
 
@@ -129,42 +144,40 @@ class ReportView extends React.Component<Props, States> {
                 <option key={i} id={i}>{i}</option>
             )
         }
-        return <div>
-            <p>filters view</p>
-            <label>Month : </label>
-            <select name="month" id="month" onChange={this.onSelectMonth}>
-                {monthsOptions}
-            </select>
-            <br />
-            <label>Year : </label>
-            <select name="year" id="year" onChange={this.onSelectYear}>
-                {this.renderYearOptions()}
-            </select>
-            <br />
-            <label>Exchange : </label>
-            <select name="exchange" id="exchange" onChange={this.onSelectExchange}>
-                {this.renderExchangesOptions()}
-            </select>
-            <br />
-            <label>Payment : </label>
-            <select name="payment" id="payment" onChange={this.onSelectPayment}>
-                {this.renderPaymentsOptions()}
-            </select>
-            <br />
+        return <div id='filters' style={filtersStyle}>
+            <h4>Filters</h4>
+            <div id="filters.month" style={filterRowStyle}>
+                <label>Month : </label>
+                <select name="month" id="month" onChange={this.onSelectMonth}>
+                    {monthsOptions}
+                </select>
+            </div>
+            <div id="filters.year" style={filterRowStyle}>
+                <label>Year : </label>
+                <select name="year" id="year" onChange={this.onSelectYear}>
+                    {this.renderYearOptions()}
+                </select>
+            </div>
+            <div id="filters.exchange" style={filterRowStyle}>
+                <label>Exchange : </label>
+                <select name="exchange" id="exchange" onChange={this.onSelectExchange}>
+                    {this.renderExchangesOptions()}
+                </select>
+            </div>
+            <div id="filters.payment" style={filterRowStyle}>
+                <label>Payment : </label>
+                <select name="payment" id="payment" onChange={this.onSelectPayment}>
+                    {this.renderPaymentsOptions()}
+                </select>
+            </div>
             <button onClick={this.clickCheckFilter}>Check</button>
         </div>
     }
 
-    // shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<States>, nextContext: any): boolean {
-    //     console.log('check should update', this.props != nextProps || this.state != nextState)
-    //     return this.props != nextProps || this.state != nextState;
-    // }
-
     render(): React.ReactNode {
-        return <div>
-            <p>in report view</p>
+        return <div id='overview' style={viewStyle}>
             {this.renderFiltersView()}
-            <br />
+            <h4>Reports</h4>
             <ReportNumTransactions transactions={this.state.filteredTransactions} />
             <ReportAssetsSold transactions={this.state.filteredTransactions} />
             <ReportCurrency transactions={this.state.filteredTransactions} />

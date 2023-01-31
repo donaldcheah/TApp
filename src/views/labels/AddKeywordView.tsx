@@ -1,10 +1,16 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import { KEYWORD_TYPES } from "../../constants";
 import { dbAccess } from '../../DBAccess'
 
 interface Props {
     selectedType: KEYWORD_TYPES
     addedKeywordCallback: () => void
+}
+const viewStyle: CSSProperties = {
+    marginBottom: '8px'
+}
+const buttonStyle: CSSProperties = {
+    marginLeft: '8px'
 }
 class AddKeywordView extends React.Component<Props> {
 
@@ -35,11 +41,11 @@ class AddKeywordView extends React.Component<Props> {
         }
     }
     render(): React.ReactNode {
-        return <div>
+        return <div id="addKeyword" style={viewStyle}>
             <form onSubmit={this.onClickAdd}>
                 <label>Name : </label>
                 <input ref={this.addName} type="text" />
-                <input type="submit" value={"Add " + this.props.selectedType} />
+                <input type="submit" value={"Add " + this.props.selectedType} style={buttonStyle} />
             </form>
 
         </div>

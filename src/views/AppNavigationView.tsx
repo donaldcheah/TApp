@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { CSSProperties } from 'react'
 
 interface Props {
     onClickOverview: () => void,
@@ -7,18 +7,28 @@ interface Props {
     onClickSettings: () => void
 }
 interface State { }
+const style: CSSProperties = {
+    padding: "10px",
+    border: '1px solid',
+    borderRadius: "5px",
+    display: 'flex',
+    justifyContent: 'center'
+}
+const btnStyle: CSSProperties = {
+    flex: 1,
+    maxWidth: '100px',
+    // minWidth: '120px',
+    marginRight: '5px',
+    padding: '5px'
+}
 class AppNavigationView extends React.Component<Props, State> {
 
-    // constructor(props: Props) {
-    //     super(props)
-    // }
-
     render(): React.ReactNode {
-        return <div>
-            <button onClick={this.props.onClickOverview}>Overview</button>
-            <button onClick={this.props.onClickAddTransaction}>Add Transaction</button>
-            <button onClick={this.props.onClickLabels}>Keywords</button>
-            <button onClick={this.props.onClickSettings}>Settings</button>
+        return <div id="nav" style={style}>
+            <button style={btnStyle} onClick={this.props.onClickOverview}>Overview</button>
+            <button style={btnStyle} onClick={this.props.onClickAddTransaction}>Transactions</button>
+            <button style={btnStyle} onClick={this.props.onClickLabels}>Keywords</button>
+            <button style={btnStyle} onClick={this.props.onClickSettings}>Settings</button>
         </div>
     }
 }
