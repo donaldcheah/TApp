@@ -1,11 +1,15 @@
 {
   "files": {
-    "main.js": "/TApp/static/js/main.5e5364e6.js",
+    "main.css": "/TApp/static/css/main.8869b6f8.css",
+    "main.js": "/TApp/static/js/main.bc23d959.js",
     "service-worker.js": "/TApp/service-worker.js",
+    "static/media/grass_band.png": "/TApp/static/media/grass_band.a370e471a9db5a6939d2.png",
     "index.html": "/TApp/index.html",
-    "main.5e5364e6.js.map": "/TApp/static/js/main.5e5364e6.js.map"
+    "main.8869b6f8.css.map": "/TApp/static/css/main.8869b6f8.css.map",
+    "main.bc23d959.js.map": "/TApp/static/js/main.bc23d959.js.map"
   },
   "entrypoints": [
-    "static/js/main.5e5364e6.js"
+    "static/css/main.8869b6f8.css",
+    "static/js/main.bc23d959.js"
   ]
 }
