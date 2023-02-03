@@ -1,4 +1,7 @@
 import { KEYWORD_TYPES } from "./constants";
+import IEI from 'indexeddb-export-import';
+import { json2csvAsync } from "json-2-csv";
+
 if ("indexedDB" in window) {
     console.log('has indexedDB')
 }
@@ -138,6 +141,7 @@ class DBAccess {
             }
             r.onsuccess = (e) => {
                 console.log('added keyword')
+                this._cachedDBJSON = null;//invalidate cached DB json as it has changed
                 rs(true)
             }
         });
@@ -162,7 +166,9 @@ class DBAccess {
             }
             r.onsuccess = (e) => {
                 console.log("added transaction")
+                this._cachedDBJSON = null;//invalidate cached DB json as it has changed
                 rs(true)
+
             }
         });
 
@@ -250,6 +256,55 @@ class DBAccess {
 
     }
 
+    private _cachedDBJSON: any = null
+    downloadTransactionsCSV() {
+        if (!this._idb)
+            throw new Error(ERROR_DB_READY)
+
+
+        if (!this._cachedDBJSON) {
+            this.getDBJSON().then((json) => {
+                const obj = JSON.parse(json)
+                this._cachedDBJSON = obj
+
+                json2csvAsync(obj.TRANSACTIONS).then((str) => {
+                    console.log('export csv:', str)
+                    this.downloadFile("TApp_transactions.csv", str)
+                })
+            })
+        } else {
+            const obj = this._cachedDBJSON
+            json2csvAsync(obj.TRANSACTIONS).then((str) => {
+                console.log('export csv:', str)
+                this.downloadFile("TApp_transactions.csv", str)
+            })
+        }
+
+    }
+    private getDBJSON(): Promise<string> {
+        if (!this._idb)
+            throw new Error(ERROR_DB_READY)
+
+        return new Promise((rs, rj) => {
+            IEI.exportToJsonString(this._idb, (err: string, json: string) => {
+                if (err) {
+                    console.error('error exportToJsonString:', err)
+                    rj(err)
+                    return
+                }
+                console.log('export json:', json)
+                rs(json);
+            })
+        });
+
+    }
+    downloadFile(fileName: string, fileString: string) {
+        var a = document.createElement("a");
+        var file = new Blob([fileString], { type: 'text/plain' });
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+    }
 }
 
 
