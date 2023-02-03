@@ -1,6 +1,7 @@
 import { KEYWORD_TYPES } from "./constants";
 import IEI from 'indexeddb-export-import';
 import { json2csvAsync } from "json-2-csv";
+import { DB_TABLES } from "./constants";
 
 if ("indexedDB" in window) {
     console.log('has indexedDB')
@@ -298,13 +299,50 @@ class DBAccess {
         });
 
     }
-    downloadFile(fileName: string, fileString: string) {
+    private downloadFile(fileName: string, fileString: string) {
         var a = document.createElement("a");
         var file = new Blob([fileString], { type: 'text/plain' });
         a.href = URL.createObjectURL(file);
         a.download = fileName;
         a.click();
     }
+
+    clearTable(table: string): Promise<boolean> {
+        if (!this._idb)
+            throw new Error(ERROR_DB_READY)
+
+        let targetObjectStoreName = null
+        switch (table) {
+            case DB_TABLES.ASSETS:
+                targetObjectStoreName = ASSETS_TABLE
+                break;
+            case DB_TABLES.EXCHANGES:
+                targetObjectStoreName = EXCHANGES_TABLE
+                break;
+            case DB_TABLES.PAYMENTS:
+                targetObjectStoreName = PAYMENTS_TABLE
+                break;
+            case DB_TABLES.TRANSACTIONS:
+                targetObjectStoreName = TRANSACTIONS_TABLE
+                break;
+            default:
+                throw new Error(`Unknown table type : ${table}`)
+        }
+        const t = this._idb.transaction([targetObjectStoreName], 'readwrite')
+        const os = t.objectStore(targetObjectStoreName)
+        return new Promise((rs, rj) => {
+            const req = os.clear()
+            req.onsuccess = () => {
+                console.log('cleared table :', table)
+                rs(true)
+            }
+            req.onerror = (e) => {
+                console.error('unable to clear table : ', table)
+                rj(e)
+            }
+        });
+    }
+
 }
 
 
