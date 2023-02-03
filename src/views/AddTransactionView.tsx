@@ -137,7 +137,7 @@ class AddTransactionView extends React.Component<Props, States>{
             <select onChange={this.onSelectFromChange}>
                 {options}
             </select>
-            <input type="number" placeholder='units' onChange={this.onFromAmountChange} />
+            <input type="number" placeholder='units' onChange={this.onFromAmountChange} step='any' min='0' />
         </div>
     }
 
@@ -150,7 +150,7 @@ class AddTransactionView extends React.Component<Props, States>{
             <select onChange={this.onSelectToChange}>
                 {options}
             </select>
-            <input type="number" placeholder='units' onChange={this.onToAmountChange} />
+            <input type="number" placeholder='units' onChange={this.onToAmountChange} step='any' min='0' />
         </div>
     }
 
