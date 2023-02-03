@@ -11,6 +11,7 @@ interface States {
     selectedDate: string
     fromInputValid: boolean
     toInputValid: boolean
+    showAddedTransaction: boolean
 }
 
 const viewStyle: CSSProperties = {
@@ -29,6 +30,12 @@ const inputInvalidStyle: CSSProperties = {
     border: '1px solid red',
     borderRadius: '2px',
     color: 'red'
+}
+const transactionAddedStyle: CSSProperties = {
+    marginLeft: '8px',
+    color: 'green',
+    border: '1px green',
+    borderRadius: '8px'
 }
 /* Safari IOS 16.1.1
 has problem with <input type="number"/>
@@ -58,7 +65,8 @@ class AddTransactionView extends React.Component<Props, States>{
             isLoaded: false,
             selectedDate: formatDate,
             fromInputValid: false,
-            toInputValid: false
+            toInputValid: false,
+            showAddedTransaction: false
         }
     }
 
@@ -142,7 +150,6 @@ class AddTransactionView extends React.Component<Props, States>{
             return <option key={s} id={s}>{s}</option>
         })
         const targetStyle = this.state.fromInputValid ? {} : inputInvalidStyle
-        console.log('s=', targetStyle)
         return <div id='transactions.from' style={entryRowStyle}>
             <label>From : </label>
             <select onChange={this.onSelectFromChange} style={unitSelectorStyle}>
@@ -235,15 +242,32 @@ class AddTransactionView extends React.Component<Props, States>{
             this._selectedPayment
         ).then((rs) => {
             console.log('added transaction')
+            this.showAddedTransaction()
         },
             (err) => {
                 console.log('failed to add transaction')
             });
     }
+    private _showTimeoutKey: any = null
+    showAddedTransaction() {
+        this.setState({ ...this.state, showAddedTransaction: true })
+        this._showTimeoutKey = setTimeout(() => {
+            this._showTimeoutKey = null
+            this.setState({ ...this.state, showAddedTransaction: false })
+        }, 2000);
+    }
+
+    componentWillUnmount(): void {
+        if (this._showTimeoutKey) {
+            clearTimeout(this._showTimeoutKey)
+        }
+    }
 
     render() {
         if (!this.state.isLoaded)
             return <div>Loading keywords...</div>
+
+        const confirmStyle = this.state.showAddedTransaction ? transactionAddedStyle : { display: 'none' }
 
         return <div id="transactions" style={viewStyle}>
 
@@ -256,6 +280,7 @@ class AddTransactionView extends React.Component<Props, States>{
                 onClick={this.onClickAddTransaction}
                 disabled={!(this.state.fromInputValid && this.state.toInputValid)}
             >Add Transaction</button>
+            <span style={confirmStyle}>&#10003; Transaction Added</span>
         </div>
     }
 }
