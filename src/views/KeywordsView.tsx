@@ -44,7 +44,6 @@ class KeywordsView extends React.Component<Props, States> {
     fetchAssetsList = () => {
         dbAccess.getList(KEYWORD_TYPES.ASSETS).then(
             (list) => {
-                console.log('gotten list:', list)
                 this.setState(
                     (s) => {
                         return {
@@ -53,7 +52,6 @@ class KeywordsView extends React.Component<Props, States> {
                         }
                     }
                 )
-                console.log('state:', this.state)
             },
             (e) => {
                 console.log('error getting list:', e)
@@ -63,7 +61,6 @@ class KeywordsView extends React.Component<Props, States> {
     fetchExchangesList = () => {
         dbAccess.getList(KEYWORD_TYPES.EXCHANGES).then(
             (list) => {
-                console.log('gotten list:', list)
                 this.setState(
                     (s) => {
                         return {
@@ -72,7 +69,6 @@ class KeywordsView extends React.Component<Props, States> {
                         }
                     }
                 )
-                console.log('state:', this.state)
             },
             (e) => {
                 console.log('error getting list:', e)
@@ -82,7 +78,6 @@ class KeywordsView extends React.Component<Props, States> {
     fetchPaymentsList = () => {
         dbAccess.getList(KEYWORD_TYPES.PAYMENTS).then(
             (list) => {
-                console.log('gotten list:', list)
                 this.setState(
                     (s) => {
                         return {
@@ -91,7 +86,6 @@ class KeywordsView extends React.Component<Props, States> {
                         }
                     }
                 )
-                console.log('state:', this.state)
             },
             (e) => {
                 console.log('error getting list:', e)
@@ -103,9 +97,6 @@ class KeywordsView extends React.Component<Props, States> {
         this.fetchPaymentsList()
         this.fetchAssetsList()
         this.fetchExchangesList()
-    }
-    componentWillUnmount(): void {
-        console.log('keywords view will unmount')
     }
 
     updateCurrentList(): void {
@@ -123,8 +114,6 @@ class KeywordsView extends React.Component<Props, States> {
     }
 
     onKeywordTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        // console.log('index=', e.target.selectedIndex)
-        // console.log('option id=', e.target.selectedOptions[0].id)
         const selectedOptionID = e.target.selectedOptions[0].id
         let targetType = KEYWORD_TYPES.ASSETS
         switch (selectedOptionID) {
@@ -157,12 +146,10 @@ class KeywordsView extends React.Component<Props, States> {
     }
 
     onAddedKeyword = () => {
-        console.log('should update keywords list')
         this.updateCurrentList()
     }
 
     render(): React.ReactNode {
-        // console.log('render state:', this.state)
         return <div id="keywords" style={viewStyle}>
             {/* <p>in keywords view</p> */}
             <div id="keywords.type" style={entryRowStyle}>
