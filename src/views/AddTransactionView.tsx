@@ -9,6 +9,8 @@ interface States {
     payments: string[],
     isLoaded: boolean
     selectedDate: string
+    fromInputValid: boolean
+    toInputValid: boolean
 }
 
 const viewStyle: CSSProperties = {
@@ -17,9 +19,22 @@ const viewStyle: CSSProperties = {
     marginTop: '8px',
     padding: '8px'
 }
+const unitSelectorStyle: CSSProperties = {
+    marginRight: '8px'
+}
 const entryRowStyle: CSSProperties = {
     marginBottom: '8px',
 }
+const inputInvalidStyle: CSSProperties = {
+    border: '1px solid red',
+    borderRadius: '2px',
+    color: 'red'
+}
+/* Safari IOS 16.1.1
+has problem with <input type="number"/>
+where it returns input of "12." as empty string.
+Doesn't happen on safari desktop and chrome/mobile
+*/
 
 class AddTransactionView extends React.Component<Props, States>{
     private _selectedFrom: string = '';
@@ -41,7 +56,9 @@ class AddTransactionView extends React.Component<Props, States>{
             exchanges: [],
             payments: [],
             isLoaded: false,
-            selectedDate: formatDate
+            selectedDate: formatDate,
+            fromInputValid: false,
+            toInputValid: false
         }
     }
 
@@ -107,24 +124,16 @@ class AddTransactionView extends React.Component<Props, States>{
     private _toAmount: number = 0
     onFromAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const num = Number(e.target.value);//empty string = 0
-        if (num <= 0) {
-            //found invalid 0 or negative number
-            this._fromAmount = 0
-            e.target.value = ''
-            return;
-        }
         this._fromAmount = num
+        const valid = num > 0
+        this.setState({ ...this.state, fromInputValid: valid })
         console.log('fromAmount:', this._fromAmount)
     }
     onToAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const num = Number(e.target.value);//empty string = 0
-        if (num <= 0) {
-            //found invalid 0 or negative number
-            this._toAmount = 0
-            e.target.value = ''
-            return;
-        }
         this._toAmount = num
+        const valid = num > 0
+        this.setState({ ...this.state, toInputValid: valid })
         console.log('toAmount:', this._toAmount)
     }
 
@@ -132,12 +141,14 @@ class AddTransactionView extends React.Component<Props, States>{
         const options = this.state.assets.map(s => {
             return <option key={s} id={s}>{s}</option>
         })
+        const targetStyle = this.state.fromInputValid ? {} : inputInvalidStyle
+        console.log('s=', targetStyle)
         return <div id='transactions.from' style={entryRowStyle}>
             <label>From : </label>
-            <select onChange={this.onSelectFromChange}>
+            <select onChange={this.onSelectFromChange} style={unitSelectorStyle}>
                 {options}
             </select>
-            <input type="number" placeholder='units' onChange={this.onFromAmountChange} step='any' min='0' />
+            <input type="text" placeholder='units' onChange={this.onFromAmountChange} style={targetStyle} />
         </div>
     }
 
@@ -145,12 +156,13 @@ class AddTransactionView extends React.Component<Props, States>{
         const options = this.state.assets.map(s => {
             return <option key={s} id={s}>{s}</option>
         })
+        const targetStyle = this.state.toInputValid ? {} : inputInvalidStyle
         return <div id='transactions.to' style={entryRowStyle}>
             <label>To : </label>
-            <select onChange={this.onSelectToChange}>
+            <select onChange={this.onSelectToChange} style={unitSelectorStyle}>
                 {options}
             </select>
-            <input type="number" placeholder='units' onChange={this.onToAmountChange} step='any' min='0' />
+            <input type="text" placeholder='units' onChange={this.onToAmountChange} style={targetStyle} />
         </div>
     }
 
@@ -207,6 +219,12 @@ class AddTransactionView extends React.Component<Props, States>{
             console.error('unable to add when amount is less than or equals to 0')
             alert('unable to add when amount is less than or equals to 0')
             return;
+        } else if (Number.isNaN(this._fromAmount)) {
+            console.error('Invalid From Amount')
+            alert('Invalid From Amount')
+        } else if (Number.isNaN(this._toAmount)) {
+            console.error('Invalid To Amount')
+            alert('Invalid To Amount')
         }
         dbAccess.addTransaction(this.state.selectedDate,
             this._selectedFrom,
@@ -234,8 +252,10 @@ class AddTransactionView extends React.Component<Props, States>{
             {this.renderToView()}
             {this.renderExchangeView()}
             {this.renderPaymentView()}
-            <button onClick={this.onClickAddTransaction}>Add Transaction</button>
-
+            <button
+                onClick={this.onClickAddTransaction}
+                disabled={!(this.state.fromInputValid && this.state.toInputValid)}
+            >Add Transaction</button>
         </div>
     }
 }
