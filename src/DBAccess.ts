@@ -3,11 +3,6 @@ import IEI from 'indexeddb-export-import';
 import { json2csvAsync } from "json-2-csv";
 import { DB_TABLES } from "./constants";
 
-if ("indexedDB" in window) {
-    console.log('has indexedDB')
-}
-console.log('in DBAccess.ts')
-
 const VERSION = 2;
 const DB_NAME = "TransactionApp"
 
