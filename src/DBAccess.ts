@@ -252,6 +252,35 @@ class DBAccess {
 
     }
 
+    getLatestTransactions(amount: number): Promise<any[]> {
+        if (!this._idb)
+            throw new Error(ERROR_DB_READY)
+        if (amount <= 0)
+            throw new Error("Invalid amount of transactions to get")
+
+        const t = this._idb.transaction([TRANSACTIONS_TABLE], 'readonly')
+        const os = t.objectStore(TRANSACTIONS_TABLE)
+        return new Promise((rs, rj) => {
+            const req = os.openCursor(null, 'prev')
+            let cnt = 0
+            const arr: any[] = []
+            req.onsuccess = (e) => {
+                const c = req.result
+                if (c && cnt < amount) {
+                    arr.push(c.value)
+                    cnt++;
+                    c.continue()
+                } else {
+                    rs(arr)
+                }
+            }
+            req.onerror = (e) => {
+                rj(e)
+            }
+
+        });
+    }
+
     private _cachedDBJSON: any = null
     downloadTransactionsCSV() {
         if (!this._idb)
@@ -333,6 +362,22 @@ class DBAccess {
             }
             req.onerror = (e) => {
                 console.error('unable to clear table : ', table)
+                rj(e)
+            }
+        });
+    }
+
+    deleteTransaction(transactionID: number): Promise<void> {
+        if (!this._idb)
+            throw new Error(ERROR_DB_READY)
+        const t = this._idb.transaction([TRANSACTIONS_TABLE], 'readwrite')
+        const os = t.objectStore(TRANSACTIONS_TABLE)
+        return new Promise((rs, rj) => {
+            const req = os.delete(transactionID)
+            req.onsuccess = () => {
+                rs()
+            }
+            req.onerror = (e) => {
                 rj(e)
             }
         });
