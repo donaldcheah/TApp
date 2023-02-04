@@ -12,6 +12,8 @@ interface States {
     fromInputValid: boolean
     toInputValid: boolean
     showAddedTransaction: boolean
+    fromInputText: string
+    toInputText: string
 }
 
 const viewStyle: CSSProperties = {
@@ -66,7 +68,9 @@ class AddTransactionView extends React.Component<Props, States>{
             selectedDate: formatDate,
             fromInputValid: false,
             toInputValid: false,
-            showAddedTransaction: false
+            showAddedTransaction: false,
+            fromInputText: '',
+            toInputText: ''
         }
     }
 
@@ -104,13 +108,11 @@ class AddTransactionView extends React.Component<Props, States>{
             this.setState(s => {
                 return { ...s, isLoaded: true }
             })
-            // console.log('s', this.state)
         });
     }
 
     onSelectFromChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedID = e.target.selectedOptions[0].id
-        console.log('selected from:', selectedID)
         this._selectedFrom = selectedID;
     }
     onSelectToChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -131,17 +133,18 @@ class AddTransactionView extends React.Component<Props, States>{
     private _fromAmount: number = 0
     private _toAmount: number = 0
     onFromAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log('from amt change')
         const num = Number(e.target.value);//empty string = 0
         this._fromAmount = num
         const valid = num > 0
-        this.setState({ ...this.state, fromInputValid: valid })
+        this.setState({ ...this.state, fromInputValid: valid, fromInputText: e.target.value })
         console.log('fromAmount:', this._fromAmount)
     }
     onToAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const num = Number(e.target.value);//empty string = 0
         this._toAmount = num
         const valid = num > 0
-        this.setState({ ...this.state, toInputValid: valid })
+        this.setState({ ...this.state, toInputValid: valid, toInputText: e.target.value })
         console.log('toAmount:', this._toAmount)
     }
 
@@ -155,7 +158,7 @@ class AddTransactionView extends React.Component<Props, States>{
             <select onChange={this.onSelectFromChange} style={unitSelectorStyle}>
                 {options}
             </select>
-            <input type="text" placeholder='units' onChange={this.onFromAmountChange} style={targetStyle} />
+            <input type="text" placeholder='units' value={this.state.fromInputText} onChange={this.onFromAmountChange} style={targetStyle} />
         </div>
     }
 
@@ -169,7 +172,7 @@ class AddTransactionView extends React.Component<Props, States>{
             <select onChange={this.onSelectToChange} style={unitSelectorStyle}>
                 {options}
             </select>
-            <input type="text" placeholder='units' onChange={this.onToAmountChange} style={targetStyle} />
+            <input type="text" placeholder='units' value={this.state.toInputText} onChange={this.onToAmountChange} style={targetStyle} />
         </div>
     }
 
@@ -241,7 +244,7 @@ class AddTransactionView extends React.Component<Props, States>{
             this._selectedExchange,
             this._selectedPayment
         ).then((rs) => {
-            console.log('added transaction')
+            this.clearTextBoxes()
             this.showAddedTransaction()
         },
             (err) => {
@@ -250,11 +253,20 @@ class AddTransactionView extends React.Component<Props, States>{
     }
     private _showTimeoutKey: any = null
     showAddedTransaction() {
-        this.setState({ ...this.state, showAddedTransaction: true })
+        this.setState((state) => {
+            return { ...state, showAddedTransaction: true }
+        })
         this._showTimeoutKey = setTimeout(() => {
             this._showTimeoutKey = null
-            this.setState({ ...this.state, showAddedTransaction: false })
+            this.setState((state) => {
+                return { ...state, showAddedTransaction: false }
+            })
         }, 2000);
+    }
+    clearTextBoxes() {
+        this.setState((s) => {
+            return { ...s, fromInputText: '', toInputText: '', toInputValid: false, fromInputValid: false }
+        })
     }
 
     componentWillUnmount(): void {
