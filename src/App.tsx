@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react';
 
 import ReportView from './views/ReportView';
-import AddTransactionView from './views/AddTransactionView';
+import TransactionsView from './views/TransactionsView';
 import LabelsView from './views/KeywordsView';
 import SettingsView from './views/SettingsView';
 
@@ -76,7 +76,7 @@ class App extends React.Component<AppProps, AppStates> {
         v = <ReportView />;
         break;
       case PAGE.ADD_TRANSACTION:
-        v = <AddTransactionView />;
+        v = <TransactionsView />;
         break;
       case PAGE.LABELS:
         v = <LabelsView />
