@@ -28,7 +28,6 @@ const contentStyle: CSSProperties = {
   height: '100%',
   width: '100%',
   maxHeight: '832px',
-  // padding: '10px'
   padding: '0px 10px'
 }
 

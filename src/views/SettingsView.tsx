@@ -52,8 +52,6 @@ class SettingsView extends React.Component<Props, State> {
     }
 
     onClickExportTransactions = () => {
-        console.log('exporting transactions csv')
-        // dbAccess.downloadTransactionsCSV()
         dbAccess.downloadCSVFor(DB_TABLES.TRANSACTIONS)
     }
     onClickExportAssets = () => {
