@@ -30,7 +30,11 @@ serviceWorkerRegistration.register({
     if (registration && registration.waiting) {
       registration.waiting.postMessage({ type: 'SKIP_WAITING' });
     }
-    window.location.reload();
+    //delay reloading page immediately after notifying SW to skip waiting
+    //hopefully prevents the white page problem
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000)
   }
 })
 
