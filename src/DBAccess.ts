@@ -1,6 +1,6 @@
 import { KEYWORD_TYPES } from "./constants";
 import IEI from 'indexeddb-export-import';
-import { json2csvAsync } from "json-2-csv";
+import { json2csvAsync, csv2jsonAsync } from "json-2-csv";
 import { DB_TABLES } from "./constants";
 
 const VERSION = 2;
@@ -282,30 +282,148 @@ class DBAccess {
     }
 
     private _cachedDBJSON: any = null
-    downloadTransactionsCSV() {
+    downloadCSVFor(table: DB_TABLES) {
         if (!this._idb)
             throw new Error(ERROR_DB_READY)
 
+        let targetObjectStoreName: string;
+        switch (table) {
+            case DB_TABLES.ASSETS:
+                targetObjectStoreName = ASSETS_TABLE
+                break;
+            case DB_TABLES.EXCHANGES:
+                targetObjectStoreName = EXCHANGES_TABLE
+                break;
+            case DB_TABLES.PAYMENTS:
+                targetObjectStoreName = PAYMENTS_TABLE
+                break;
+            case DB_TABLES.TRANSACTIONS:
+                targetObjectStoreName = TRANSACTIONS_TABLE
+                break;
+            default:
+                throw new Error(`Unknown DB_TABLES : ${table}`)
+        }
 
         if (!this._cachedDBJSON) {
             this.getDBJSON().then((json) => {
                 const obj = JSON.parse(json)
                 this._cachedDBJSON = obj
 
-                json2csvAsync(obj.TRANSACTIONS).then((str) => {
-                    console.log('export csv:', str)
-                    this.downloadFile("TApp_transactions.csv", str)
+                const targetJSObj: object[] = obj[targetObjectStoreName]
+                this._convertObjToCSV(targetJSObj).then((str) => {
+                    // console.log('export csv:', str)
+                    const now = new Date();
+                    const offset = now.getTimezoneOffset();
+                    const date = new Date(now.getTime() - offset * 60 * 1000);
+                    const dateTimeString = date.toISOString().replace(/[^0-9]/g, '').substr(0, 14);
+                    this.downloadFile(`TApp_${targetObjectStoreName}_${dateTimeString}.csv`, str, 'text/csv')
                 })
             })
         } else {
             const obj = this._cachedDBJSON
-            json2csvAsync(obj.TRANSACTIONS).then((str) => {
-                console.log('export csv:', str)
-                this.downloadFile("TApp_transactions.csv", str)
+            const targetJSObj: object[] = obj[targetObjectStoreName]
+            this._convertObjToCSV(targetJSObj).then((str) => {
+                // console.log('export csv:', str)
+                const now = new Date();
+                const offset = now.getTimezoneOffset();
+                const date = new Date(now.getTime() - offset * 60 * 1000);
+                const dateTimeString = date.toISOString().replace(/[^0-9]/g, '').substr(0, 14);
+                this.downloadFile(`TApp_${targetObjectStoreName}_${dateTimeString}.csv`, str, 'text/csv')
             })
         }
 
     }
+    private _convertObjToCSV(jsObject: object[]): Promise<string> {
+        return json2csvAsync(jsObject)
+    }
+
+    convertCSVToJSON = (csv: string): Promise<any[]> => {
+        return csv2jsonAsync(csv)
+    }
+
+
+    importCSV = (type: DB_TABLES, csv: string): Promise<void> => {
+        if (!this._idb)
+            throw new Error(ERROR_DB_READY)
+        let targetObjectStoreName = null
+        switch (type) {
+            case DB_TABLES.ASSETS:
+                targetObjectStoreName = ASSETS_TABLE
+                break;
+            case DB_TABLES.EXCHANGES:
+                targetObjectStoreName = EXCHANGES_TABLE
+                break;
+            case DB_TABLES.PAYMENTS:
+                targetObjectStoreName = PAYMENTS_TABLE
+                break;
+            case DB_TABLES.TRANSACTIONS:
+                targetObjectStoreName = TRANSACTIONS_TABLE
+                break;
+            default:
+                throw new Error(`Unknown table type : ${type}`)
+        }
+        const t = this._idb.transaction([targetObjectStoreName], 'readwrite')
+        const os = t.objectStore(targetObjectStoreName)
+        return new Promise((rs, rj) => {
+            this.convertCSVToJSON(csv).then((arr) => {
+                os.clear()
+                arr.forEach(e => os.add(e))
+                t.oncomplete = () => {
+                    rs()
+                }
+                t.onerror = (e) => {
+                    rj(e)
+                }
+            })
+
+        })
+
+    }
+
+    // importPaymentsCSV = (paymentsCSV: string): Promise<void> => {
+    //     if (!this._idb)
+    //         throw new Error(ERROR_DB_READY)
+
+    //     const t = this._idb.transaction([PAYMENTS_TABLE], 'readwrite')
+    //     const os = t.objectStore(PAYMENTS_TABLE)
+    //     return new Promise((rs, rj) => {
+    //         this.convertCSVToJSON(paymentsCSV).then((arr) => {
+    //             os.clear()
+    //             arr.forEach(e => os.add(e))
+    //             t.oncomplete = () => {
+    //                 console.log('added all csv payments')
+    //                 rs()
+    //             }
+    //             t.onerror = (e) => {
+    //                 rj(e)
+    //             }
+    //         })
+
+    //     })
+    // }
+
+    // importExchangesCSV = (exchangesCSV: string): Promise<void> => {
+    //     if (!this._idb)
+    //         throw new Error(ERROR_DB_READY)
+
+    //     const t = this._idb.transaction([EXCHANGES_TABLE], 'readwrite')
+    //     const os = t.objectStore(EXCHANGES_TABLE)
+    //     return new Promise((rs, rj) => {
+    //         this.convertCSVToJSON(exchangesCSV).then((arr) => {
+    //             os.clear()
+    //             arr.forEach(e => os.add(e))
+    //             t.oncomplete = () => {
+    //                 console.log('added all csv exchanges')
+    //                 rs()
+    //             }
+    //             t.onerror = (e) => {
+    //                 rj(e)
+    //             }
+    //         })
+
+    //     })
+    // }
+
     private getDBJSON(): Promise<string> {
         if (!this._idb)
             throw new Error(ERROR_DB_READY)
@@ -317,15 +435,15 @@ class DBAccess {
                     rj(err)
                     return
                 }
-                console.log('export json:', json)
+                // console.log('export json:', json)
                 rs(json);
             })
         });
 
     }
-    private downloadFile(fileName: string, fileString: string) {
+    private downloadFile(fileName: string, fileString: string, fileType: string) {
         var a = document.createElement("a");
-        var file = new Blob([fileString], { type: 'text/plain' });
+        var file = new Blob([fileString], { type: fileType });
         a.href = URL.createObjectURL(file);
         a.download = fileName;
         a.click();

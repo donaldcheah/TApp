@@ -12,3 +12,11 @@ export enum DB_TABLES {
     EXCHANGES = "Exchanges",
     PAYMENTS = "Payments"
 }
+
+export const TRANSACTION_FIELDS = ["id", "date", "exchange", "payment", "from", "fromAmount", "to", "toAmount"]
+export const NON_TRANSACTION_FIELDS = ["name"]
+
+export const ERROR_MESSAGES = {
+    INCOMPAT_TRANSACTION_CSV: `Incompatible Transaction CSV Headers\nExpecting ${TRANSACTION_FIELDS} fields.`,
+    INCOMPAT_NON_TRANSACTION_CSV: `Incompatible CSV Headers\nExpecting ${NON_TRANSACTION_FIELDS} fields.`
+}
