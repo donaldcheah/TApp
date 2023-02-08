@@ -64,7 +64,7 @@ class DBAccess {
         }
     }
 
-    //should only be called when db open request on 
+    //should only be called when db open request
     private _handleReadyCallbacks() {
 
         this._readyCallbacks.forEach((e) => e())
@@ -74,8 +74,6 @@ class DBAccess {
     getList(type: KEYWORD_TYPES): Promise<{ name: string }[]> {
         if (!this._idb)
             throw (new Error(ERROR_DB_READY))
-
-        // console.log("DBAccess::getList")
 
         let tableName = null
         switch (type) {
@@ -125,8 +123,7 @@ class DBAccess {
                 tableName = PAYMENTS_TABLE
                 break;
             default:
-                //some error
-                throw new Error("unknown keyword type in addKeyword:", type)
+                throw new Error(`unknown keyword type in addKeyword: ${type}`)
         }
         const t = this._idb.transaction([tableName], 'readwrite');
         const r = t.objectStore(tableName).add({ name: keywordName });
@@ -311,7 +308,6 @@ class DBAccess {
 
                 const targetJSObj: object[] = obj[targetObjectStoreName]
                 this._convertObjToCSV(targetJSObj).then((str) => {
-                    // console.log('export csv:', str)
                     const now = new Date();
                     const offset = now.getTimezoneOffset();
                     const date = new Date(now.getTime() - offset * 60 * 1000);
@@ -323,7 +319,6 @@ class DBAccess {
             const obj = this._cachedDBJSON
             const targetJSObj: object[] = obj[targetObjectStoreName]
             this._convertObjToCSV(targetJSObj).then((str) => {
-                // console.log('export csv:', str)
                 const now = new Date();
                 const offset = now.getTimezoneOffset();
                 const date = new Date(now.getTime() - offset * 60 * 1000);
@@ -380,50 +375,6 @@ class DBAccess {
 
     }
 
-    // importPaymentsCSV = (paymentsCSV: string): Promise<void> => {
-    //     if (!this._idb)
-    //         throw new Error(ERROR_DB_READY)
-
-    //     const t = this._idb.transaction([PAYMENTS_TABLE], 'readwrite')
-    //     const os = t.objectStore(PAYMENTS_TABLE)
-    //     return new Promise((rs, rj) => {
-    //         this.convertCSVToJSON(paymentsCSV).then((arr) => {
-    //             os.clear()
-    //             arr.forEach(e => os.add(e))
-    //             t.oncomplete = () => {
-    //                 console.log('added all csv payments')
-    //                 rs()
-    //             }
-    //             t.onerror = (e) => {
-    //                 rj(e)
-    //             }
-    //         })
-
-    //     })
-    // }
-
-    // importExchangesCSV = (exchangesCSV: string): Promise<void> => {
-    //     if (!this._idb)
-    //         throw new Error(ERROR_DB_READY)
-
-    //     const t = this._idb.transaction([EXCHANGES_TABLE], 'readwrite')
-    //     const os = t.objectStore(EXCHANGES_TABLE)
-    //     return new Promise((rs, rj) => {
-    //         this.convertCSVToJSON(exchangesCSV).then((arr) => {
-    //             os.clear()
-    //             arr.forEach(e => os.add(e))
-    //             t.oncomplete = () => {
-    //                 console.log('added all csv exchanges')
-    //                 rs()
-    //             }
-    //             t.onerror = (e) => {
-    //                 rj(e)
-    //             }
-    //         })
-
-    //     })
-    // }
-
     private getDBJSON(): Promise<string> {
         if (!this._idb)
             throw new Error(ERROR_DB_READY)
@@ -435,7 +386,6 @@ class DBAccess {
                     rj(err)
                     return
                 }
-                // console.log('export json:', json)
                 rs(json);
             })
         });
