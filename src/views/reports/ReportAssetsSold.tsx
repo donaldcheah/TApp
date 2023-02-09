@@ -1,4 +1,5 @@
 import React, { CSSProperties } from 'react';
+import { Decimal } from 'decimal.js'
 
 interface Props {
     transactions: any[]
@@ -36,29 +37,36 @@ const viewStyle: CSSProperties = {
 }
 class ReportAssetsSold extends React.Component<Props> {
     renderAssetsSold() {
-        let data: { [key: string]: { amount: number, toAmount: number } } = {}
-        this.props.transactions.filter((e) => {
+        let data: { [key: string]: { amount: Decimal, toAmount: Decimal } } = {}
+
+        console.log('props.transactions : ', this.props.transactions)
+        const copyList = this.props.transactions.filter((e) => {
             return e.to.toUpperCase() === 'MYR'
+        }).map((e) => {
+            return {
+                ...e,
+                fromAmount: new Decimal(e.fromAmount),
+                toAmount: new Decimal(e.toAmount)
+            }
         }).forEach((e) => {
             const { from, fromAmount, toAmount } = e;
 
             if (!data.hasOwnProperty(from)) {
                 data[from] = {
-                    amount: 0,
-                    toAmount: 0
+                    amount: new Decimal(0),
+                    toAmount: new Decimal(0)
                 }
             }
-
-            data[from].toAmount += toAmount
-            data[from].amount += fromAmount
-
+            data[from].toAmount = data[from].toAmount.add(toAmount)
+            data[from].amount = data[from].amount.add(fromAmount)
         })
+
         const keys = Object.keys(data)
         if (keys.length === 0) {
             return <p>No data to display</p>
         }
         return keys.map((k) => {
-            return <p key={k}>Sold {data[k].amount} {k} for {data[k].toAmount} MYR</p>
+            return <p key={k}>Sold {data[k].amount.toNumber()} {k} for {data[k].toAmount.toFixed(2)} MYR</p>
         });
     }
     render(): React.ReactNode {
