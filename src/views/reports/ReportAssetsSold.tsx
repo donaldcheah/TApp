@@ -39,8 +39,7 @@ class ReportAssetsSold extends React.Component<Props> {
     renderAssetsSold() {
         let data: { [key: string]: { amount: Decimal, toAmount: Decimal } } = {}
 
-        console.log('props.transactions : ', this.props.transactions)
-        const copyList = this.props.transactions.filter((e) => {
+        this.props.transactions.filter((e) => {
             return e.to.toUpperCase() === 'MYR'
         }).map((e) => {
             return {

@@ -25,10 +25,9 @@ class DBAccess {
     constructor() {
         const request = window.indexedDB.open(DB_NAME, VERSION);
         request.onerror = (e) => {
-            //TODO
+            alert(e)
         }
         request.onsuccess = (e) => {
-            console.log('opened indexedDB')
             this._idb = request.result;
             this._isReady = true;
             this._handleReadyCallbacks()
@@ -110,7 +109,6 @@ class DBAccess {
     addKeyword(keywordName: string, type: KEYWORD_TYPES): Promise<boolean> {
         if (!this._idb)
             throw (new Error(ERROR_DB_READY))
-        console.log("DBAccess::addKeyword")
         let tableName = null
         switch (type) {
             case KEYWORD_TYPES.ASSETS:
@@ -133,7 +131,6 @@ class DBAccess {
                 rj(e)
             }
             r.onsuccess = (e) => {
-                console.log('added keyword')
                 this._cachedDBJSON = null;//invalidate cached DB json as it has changed
                 rs(true)
             }
@@ -146,7 +143,6 @@ class DBAccess {
         if (!this._idb) {
             throw (new Error(ERROR_DB_READY))
         }
-        console.log("DBAccess::addTransaction")
         let obj = {
             date, from, fromAmount, to, toAmount, exchange, payment
         }
@@ -158,7 +154,6 @@ class DBAccess {
                 rj(e)
             }
             r.onsuccess = (e) => {
-                console.log("added transaction")
                 this._cachedDBJSON = null;//invalidate cached DB json as it has changed
                 rs(true)
 
@@ -200,8 +195,6 @@ class DBAccess {
         if (!this._idb)
             throw new Error(ERROR_DB_READY)
 
-        console.log("DBAccess::getTransactions")
-
         const t = this._idb.transaction([TRANSACTIONS_TABLE], 'readonly')
         const os = t.objectStore(TRANSACTIONS_TABLE)
 
@@ -237,7 +230,6 @@ class DBAccess {
                     c.continue();
                 } else {
                     //EOL of cursor
-                    console.log('getTransactions:', filteredList)
                     rs(filteredList);
                 }
             }
