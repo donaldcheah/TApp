@@ -36,9 +36,7 @@ class LatestTransactionsView extends React.Component<Props, State> {
     }
 
     private _fetchData() {
-        console.log('latest transactionss fetch data')
         dbAccess.getLatestTransactions(this._showAmount).then((arr) => {
-            // console.log('latest N :', arr)
             this.setState({ ...this.state, transactions: arr })
         })
     }
@@ -46,14 +44,10 @@ class LatestTransactionsView extends React.Component<Props, State> {
     deleteData = (index: number) => {
         const targetDataID = this.state.transactions[index].id
         if (window.confirm(`Confirm delete entry ID ${targetDataID}?`)) {
-            // console.log('delete id : ', targetDataID)
             dbAccess.deleteTransaction(targetDataID).then(() => {
                 this._fetchData()
             })
         }
-    }
-    doSmth() {
-        console.log('do smth')
     }
 
     private _renderTransactionsList() {
@@ -95,7 +89,6 @@ class LatestTransactionsView extends React.Component<Props, State> {
     }
 
     onChangeShowAmount = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        console.log('show ', e.target.selectedOptions[0].value)
         this._showAmount = Number(e.target.selectedOptions[0].value)
         this._fetchData()
     }
