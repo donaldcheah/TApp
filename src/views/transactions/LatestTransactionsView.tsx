@@ -9,11 +9,7 @@ interface State {
     transactions: any[]
 }
 
-enum SHOW_AMOUNT {
-    THREE = 3,
-    FIVE = 5,
-    TEN = 10
-}
+const SHOW_AMOUNT = [3, 5, 10, 999]
 
 const latestStyle: CSSProperties = {
     border: '1px solid',
@@ -28,7 +24,7 @@ class LatestTransactionsView extends React.Component<Props, State> {
         this.state = {
             transactions: []
         }
-        this._showAmount = SHOW_AMOUNT.THREE
+        this._showAmount = SHOW_AMOUNT[0]
     }
 
     componentDidMount(): void {
@@ -104,13 +100,17 @@ class LatestTransactionsView extends React.Component<Props, State> {
         this._fetchData()
     }
 
+    renderAmountOptions() {
+        return SHOW_AMOUNT.map((num) => {
+            return <option key={num}>{num}</option>
+        })
+    }
+
     render(): React.ReactNode {
         return <div id="latestTransactions" style={latestStyle}>
             <div id="latestTransactions.header">
                 <h5>Show <select onChange={this.onChangeShowAmount}>
-                    <option>{SHOW_AMOUNT.THREE}</option>
-                    <option>{SHOW_AMOUNT.FIVE}</option>
-                    <option>{SHOW_AMOUNT.TEN}</option>
+                    {this.renderAmountOptions()}
                 </select> Latest Transactions</h5>
 
             </div>
