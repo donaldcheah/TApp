@@ -35,6 +35,9 @@ const viewStyle: CSSProperties = {
     borderRadius: '8px',
     marginBottom: '8px'
 }
+const totalTextStyle: CSSProperties = {
+    fontWeight: 'bold'
+}
 class ReportAssetsSold extends React.Component<Props> {
     renderAssetsSold() {
         let data: { [key: string]: { amount: Decimal, toAmount: Decimal } } = {}
@@ -64,9 +67,15 @@ class ReportAssetsSold extends React.Component<Props> {
         if (keys.length === 0) {
             return <p>No data to display</p>
         }
-        return keys.map((k) => {
+        const rows = keys.map((k) => {
             return <p key={k}>Sold {data[k].amount.toNumber()} {k} for {data[k].toAmount.toFixed(2)} MYR</p>
-        });
+        })
+        const totalAmt = Object.keys(data).reduce((acc, ele) => {
+            return acc.add(data[ele].toAmount)
+        }, new Decimal(0))
+        rows.push(<p style={totalTextStyle} key='total'>Total received {totalAmt.toFixed(2)} MYR</p>)
+
+        return rows
     }
     render(): React.ReactNode {
         return <div id="reportAssetsSold" style={viewStyle}>
