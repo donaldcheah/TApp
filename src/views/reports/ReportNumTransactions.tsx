@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react'
+import { CSSProperties } from 'react'
 
 interface Props {
     transactions: any[]
@@ -10,18 +10,9 @@ const viewStyle: CSSProperties = {
     borderRadius: '8px',
     marginBottom: '8px'
 }
-class ReportNumTransactions extends React.Component<Props> {
 
-    renderOutput() {
-        return <p>Number of transactions : {this.props.transactions.length}</p>
-    }
-
-    render() {
-        return <div id="reportNumTransactions" style={viewStyle}>
-            <h5># Transactions</h5>
-            {this.renderOutput()}
-        </div>
-    }
+export default function ReportNumTransactions({ transactions }: Props) {
+    return <div id="reportNumTransactions" style={viewStyle}>
+        <h5># Transactions : {transactions.length}</h5>
+    </div>
 }
-
-export default ReportNumTransactions;
