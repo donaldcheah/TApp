@@ -34,9 +34,13 @@ const currencyStyle: CSSProperties = {
 const currencyTitleStyle: CSSProperties = {
     margin: '0px'
 }
+const totalViewStyle: CSSProperties = {
+    fontWeight: 'bold'
+}
 class ReportCurrency extends React.Component<Props> {
     renderReport() {
-        return TargetCurrencies.map((c) => {
+        let total = new Decimal(0)
+        const views = TargetCurrencies.map((c) => {
             let myrAmount: Decimal = new Decimal(0);
             let usdtAmount: Decimal = new Decimal(0);
             this.props.transactions.filter((t) => {
@@ -50,19 +54,25 @@ class ReportCurrency extends React.Component<Props> {
             if (myrAmount.toNumber() === 0 || usdtAmount.toNumber() === 0) {
                 return <p key={c}>no data to display</p>
             }
+            total = total.add(myrAmount)
             return <div key={c} style={currencyStyle}>
                 <h5 style={currencyTitleStyle}>{c}</h5>
                 <hr />
                 <p>Sold {myrAmount.toFixed(2)} {BaseCurrency} for {usdtAmount.toNumber()} {c}</p>
-                <p>Ratio of {(myrAmount.dividedBy(usdtAmount)).toFixed(2)} {BaseCurrency}/{c}</p>
+                <p>Ratio : {(myrAmount.dividedBy(usdtAmount)).toFixed(2)} {BaseCurrency}/{c}</p>
             </div>
         })
+        if (!total.equals(0))
+            views.push(<p style={totalViewStyle} key="total">Total spent {total.toFixed(2)} MYR</p>)
+
+        return views
     }
 
     render(): React.ReactNode {
         return <div id="reportCurrency" style={viewStyle}>
             <h5>Currency ({TargetCurrencies.join(',')})</h5>
             {this.renderReport()}
+            <br />
         </div>
     }
 }
